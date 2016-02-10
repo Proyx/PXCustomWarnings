@@ -3,31 +3,12 @@
 class PXCustomWarnings_editReasons extends admin_members_warnings_reasons {
 	public $html;
 	
-	/**
-	 * String for the screen url bit
-	 *
-	 * @var		$form_code
-	 */
 	public $form_code    = '';
 	
-	/**
-	 * String for the JS url bit
-	 *
-	 * @var		$form_code_js
-	 */
 	public $form_code_js = '';
 	
-	/**
-	 * Main function executed automatically by the controller
-	 *
-	 * @param	object		$registry		Registry object
-	 * @return	@e void
-	 */
 	public function doExecute( ipsRegistry $registry ) 
 	{
-		//-----------------------------------------
-		// Init
-		//-----------------------------------------
 		
 		$this->registry->getClass('class_permissions')->checkPermissionAutoMsg( 'reasons_view' );
 		
@@ -37,9 +18,6 @@ class PXCustomWarnings_editReasons extends admin_members_warnings_reasons {
 		$this->form_code	= $this->html->form_code	= 'module=warnings&amp;section=reasons&amp;';
 		$this->form_code_js	= $this->html->form_code_js	= 'module=warnings&section=reasons&';
 		
-		//-----------------------------------------
-		// What are we doing
-		//-----------------------------------------
 		
 		switch ( $this->request['do'] )
 		{
@@ -71,19 +49,12 @@ class PXCustomWarnings_editReasons extends admin_members_warnings_reasons {
 				$this->manage();
 				break;
 		}	
-	
-		//-----------------------------------------
-		// Pass to CP output hander
-		//-----------------------------------------
 		
 		$this->registry->getClass('output')->html_main .= $this->registry->getClass('output')->global_template->global_frame_wrapper();
 		$this->registry->getClass('output')->sendOutput();
 		return;
 	}
 	
-	/**
-	 * Action: Manage
-	 */
 	private function manage()
 	{
 		$reasons = array();
@@ -98,9 +69,6 @@ class PXCustomWarnings_editReasons extends admin_members_warnings_reasons {
 		return;
 	}
 	
-	/**
-	 * Action: Show form
-	 */
 	private function form( $type )
 	{
 		$current = array();
@@ -124,23 +92,13 @@ class PXCustomWarnings_editReasons extends admin_members_warnings_reasons {
 		return;
 	}
 	
-	/**
-	 * Action: Save
-	 */
 	private function save()
 	{
-		//-----------------------------------------
-		// Validate Data
-		//-----------------------------------------
 		
 		if ( !$this->request['name'] )
 		{
 			ipsRegistry::getClass('output')->showError( 'err_warning_reason_name', '112151', FALSE, '', 500 );
 		}
-	
-		//-----------------------------------------
-		// Save
-		//-----------------------------------------
 				
 		$save = array( 
 			'wr_name'				=> $this->request['name'],
@@ -174,18 +132,11 @@ class PXCustomWarnings_editReasons extends admin_members_warnings_reasons {
 			$this->DB->insert( 'members_warn_reasons', $save );
 			$this->registry->adminFunctions->saveAdminLog( sprintf( $this->lang->words['warn_reasons_created'], $save['wr_name'] ) );
 		}
-				
-		//-----------------------------------------
-		// Display
-		//-----------------------------------------
 		
 		$this->registry->output->redirect( "{$this->settings['base_url']}app=members&amp;module=warnings&amp;section=reasons", $this->lang->words['warn_reasons_saved'] );
 		return;
 	}
 	
-	/**
-	 * Action: Delete
-	 */
 	private function delete()
 	{	
 		$this->registry->getClass('class_permissions')->checkPermissionAutoMsg( 'reasons_delete' );
@@ -211,28 +162,16 @@ class PXCustomWarnings_editReasons extends admin_members_warnings_reasons {
 		return;
 	}
 	
-	/**
-	 * AJAX Action: Reorder
-	 */
 	private function reorder()
 	{			
-		/* Get ajax class */
 		$classToLoad = IPSLib::loadLibrary( IPS_KERNEL_PATH . 'classAjax.php', 'classAjax' );
 		$ajax		 = new $classToLoad();
-		
-		//-----------------------------------------
-		// Checks...
-		//-----------------------------------------
 		
 		if( $this->registry->adminFunctions->checkSecurityKey( $this->request['md5check'], true ) === false )
 		{
 			$ajax->returnString( $this->lang->words['postform_badmd5'] );
 			exit();
 		}
- 		
- 		//-----------------------------------------
- 		// Save new position
- 		//-----------------------------------------
 
  		$position	= 1;
  		
